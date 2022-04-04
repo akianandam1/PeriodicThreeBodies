@@ -73,5 +73,5 @@ def fit(epochs, lr, input_vec):
 
 
 print(input_vec)
-fit(30, 0.001, input_vec)
+fit(1000, 0.001, input_vec)
 print(input_vec)

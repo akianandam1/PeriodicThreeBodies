@@ -95,7 +95,7 @@ if __name__ == "__main__":
     # input_vec = torch.tensor([ 2.7088e-01, -1.0769e-01, -1.5641e-07])
     # full_vec = torch.cat([torch.tensor([1,0,0,0,0,0,0,1,0]),input_vec, torch.tensor([0,0,0,0,0,0,1,1,1])])
 
-    input_vec = torch.tensor([0.3840, -0.3350, 0.2006])
+    input_vec = torch.tensor([ 2.3050e-01, -4.0595e-02,  8.5479e-44])
     full_vec = torch.cat(
         [torch.tensor([1, 0, 0, 0, 0, 0, 0, 1, 0]), input_vec, torch.tensor([0, 0, 0, 0, 0, 0, 1, 1, 1])])
     print(get_final_data(full_vec))
