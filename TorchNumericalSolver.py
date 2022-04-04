@@ -1,6 +1,5 @@
 import torch
 from constants import *
-from NumericalSolver import get_full_data
 import numpy as np
 import sys
 
@@ -89,6 +88,14 @@ def torchIntegrate(input_vector, dt, time_span):
 
 
 # Function for getting the final position of objects after time elapse w/ dt time interval
-def get_final_data(input_vector, dt=.001, time_span=3):
+def get_final_data(input_vector, dt=.001, time_span=1):
     return torchIntegrate(input_vector, dt, time_span)[-1]
 
+if __name__ == "__main__":
+    # input_vec = torch.tensor([ 2.7088e-01, -1.0769e-01, -1.5641e-07])
+    # full_vec = torch.cat([torch.tensor([1,0,0,0,0,0,0,1,0]),input_vec, torch.tensor([0,0,0,0,0,0,1,1,1])])
+
+    input_vec = torch.tensor([0.3840, -0.3350, 0.2006])
+    full_vec = torch.cat(
+        [torch.tensor([1, 0, 0, 0, 0, 0, 0, 1, 0]), input_vec, torch.tensor([0, 0, 0, 0, 0, 0, 1, 1, 1])])
+    print(get_final_data(full_vec))
