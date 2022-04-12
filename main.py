@@ -1,8 +1,6 @@
 import torch
-from TorchNumericalSolver import get_final_data
-from torch.utils.data import TensorDataset
-from torch.utils.data import DataLoader
-import torch.nn as nn
+from TorchNumericalSolver import get_full_state
+
 
 # Function to determine whether gpu is available or not
 def get_default_device():
@@ -23,45 +21,38 @@ def to_device(data, device):
         return [to_device(x, device) for x in data]
     return data.to(device, non_blocking=True)
 
-
-# Input vector we will be optimizing which represents the velocity
-# components of our malleable particle.
-input_vec = torch.tensor([0.5,-0.5,0.3], dtype = torch.float32, requires_grad=True)
+# Starting initial vector
+input_vec = torch.tensor([-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2*0.347111, -2*0.532728, 0, 35, 35, 35], requires_grad = True)
 
 def forward(input_vec):
-    # p1 starts at (1,0,0)
-    # p2 starts at (0,0,0)
-    # p3 starts at (0,1,0)
-    # p1 is the velocity we are changing. p2 and p3 have zero velocity
-    # all have mass 1
+    return get_full_state(input_vec, 0.001, 10)
 
-    full_vec = torch.cat([torch.tensor([1,0,0,0,0,0,0,1,0]),input_vec, torch.tensor([0,0,0,0,0,0,1,1,1])])
+def most_similar_state(input_vec, data_set):
 
-    # returns position of p1 after 3 time units
-    return get_final_data(full_vec)[0:3]
+    with torch.no_grad():
+        i = 0
+        max_val = -100000000
+        index = -1
+        while i < len(data_set):
+            if torch.dot(input_vec, data_set[i]).item() > max_val:
+                index = i
+
+            i += 1
+        return index
 
 
-def get_loss(position, desired_position):
-    return torch.sqrt((desired_position[0]-position[0])**2 + (desired_position[1]-position[1])**2 + (desired_position[2]-position[2])**2)
-
-
-# Defines the function that trains the model
 def fit(epochs, lr, input_vec):
-
-    # Gets appropriate batch size such that we use all the data by the time we finish our epochs
-    # optimizer = opt_func(input, lr=lr)
-
     i = 0
     while i < epochs:
-
-        # p1 should end up at (2,0,0)
-        loss = get_loss(forward(input_vec), torch.tensor([2, 0, 0]))
-
+        data_set = forward(input_vec)
+        state = data_set[most_similar_state(input_vec, data_set)]
+        loss = -torch.dot(input_vec, state)
+        #loss.retain_grad()
         loss.backward()
 
         # Updates input vector
         with torch.no_grad():
-            input_vec -= input_vec.grad*lr
+            input_vec -= input_vec.grad * lr
 
         # Zeroes gradient
         input_vec.grad.zero_()
@@ -73,5 +64,6 @@ def fit(epochs, lr, input_vec):
 
 
 print(input_vec)
-fit(1000, 0.001, input_vec)
+fit(10, 0.00001, input_vec)
 print(input_vec)
+
