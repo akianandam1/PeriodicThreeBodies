@@ -24,36 +24,37 @@ def to_device(data, device):
 # Starting initial vector
 input_vec = torch.tensor([-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2*0.347111, -2*0.532728, 0, 35, 35, 35], requires_grad = True)
 
+
 def forward(input_vec):
     return get_full_state(input_vec, 0.001, 10)
 
-def most_similar_state(input_vec, data_set):
 
-    with torch.no_grad():
-        i = 0
-        max_val = -100000000
-        index = -1
-        while i < len(data_set):
-            if torch.dot(input_vec, data_set[i]).item() > max_val:
-                index = i
+def most_similar_state(data_set):
+    i = 0
+    max_val = -100000000
+    index = -1
+    while i < len(data_set):
+        if torch.dot(data_set[len(data_set)-1], data_set[i]).item() > max_val:
+            index = i
+            max_val = torch.dot(data_set[len(data_set)-1], data_set[i]).item()
 
-            i += 1
-        return index
+        i += 1
+    return index
 
 
 def fit(epochs, lr, input_vec):
     i = 0
     while i < epochs:
         data_set = forward(input_vec)
-        state = data_set[most_similar_state(input_vec, data_set)]
-        loss = -torch.dot(input_vec, state)
+        state = data_set[most_similar_state(data_set)]
+        gain = torch.dot(data_set[len(data_set)-1], state)
         #loss.retain_grad()
-        loss.backward()
+        gain.backward()
 
         # Updates input vector
         with torch.no_grad():
-            input_vec -= input_vec.grad * lr
-
+            input_vec += input_vec.grad * lr
+        #print(input_vec.grad)
         # Zeroes gradient
         input_vec.grad.zero_()
 
@@ -64,6 +65,6 @@ def fit(epochs, lr, input_vec):
 
 
 print(input_vec)
-fit(10, 0.00001, input_vec)
+fit(1000, 0.00000001, input_vec)
 print(input_vec)
 
