@@ -36,15 +36,16 @@ def compare_states(state1, state2):
     mse = torch.nn.MSELoss()
     return 3*mse(state1[:9], state2[:9]) + mse(state1[9:18], state2[9:18])
 
+
 # Finds the most similar state to the initial position in a data set
-def most_similar_state(data_set):
-    i = 300
-    max_val = 100000000
+def most_similar_state(data_set, min, max):
+    i = min
+    max_val = torch.tensor([100000000]).to(device)
     index = -1
-    while i < len(data_set):
+    while i < max:
         if compare_states(data_set[0], data_set[i]) < max_val:
             index = i
-            max_val = compare_states(data_set[0], data_set[i]).item()
+            max_val = compare_states(data_set[0], data_set[i])
 
         i += 1
     print(f"Index: {index}")
@@ -57,12 +58,21 @@ def fit(epochs, lr, input_vec):
 
         data_set = forward(input_vec)
 
-        state = data_set[most_similar_state(data_set)]
+        first_state_index = most_similar_state(data_set, 300, len(data_set))
+        first_state = data_set[first_state_index]
+        first_state.retain_grad()
+        second_state_index = most_similar_state(data_set, int(1.8*first_state_index), int(2.2*first_state_index))
+        second_state = data_set[second_state_index]
+        second_state.retain_grad()
+        third_state_index = most_similar_state(data_set, int(2.6*first_state_index), int(3.4*first_state_index))
+        third_state = data_set[third_state_index]
+        third_state.retain_grad()
 
-        loss = compare_states(data_set[0], state)
+        loss = compare_states(data_set[0], first_state) + compare_states(data_set[0], second_state) + compare_states(data_set[0], third_state)
+        loss.retain_grad()
         print(" ")
         print(loss)
-
+        input_vec.retain_grad()
         #loss.retain_grad()
         loss.backward()
         print(input_vec.grad)
@@ -83,7 +93,7 @@ def fit(epochs, lr, input_vec):
 
 print(input_vec)
 a=1000
-b=.001
+b=.00001
 fit(a, b, input_vec)
 with open("mainoutput.txt", "a") as file:
     file.write("\n")
