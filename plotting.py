@@ -11,7 +11,12 @@ mpl.rcParams['animation.ffmpeg_path'] = r'D:\Aki\Python37\Lib\site-packages\ffmp
 # input_vec = torch.tensor([2.3050e-01, -4.0595e-02, 8.5479e-44])
 # full_vec = torch.cat(
 #     [torch.tensor([1, 0, 0, 0, 0, 0, 0, 1, 0]), input_vec, torch.tensor([0, 0, 0, 0, 0, 0, 1, 1, 1])])
-full_vec = torch.tensor([-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2*0.347111, -2*0.532728, 0, 35.7071, 35.7071, 35.7071])
+#full_vec = torch.tensor([-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2*0.347111, -2*0.532728, 0, 35.7071, 35.7071, 35.7071])
+full_vec = torch.tensor([-1.0012e+00, -1.2444e-03,  0.0000e+00,  1.0041e+00,  1.3744e-03,
+         0.0000e+00, -2.9256e-03, -1.3002e-04,  0.0000e+00,  3.4772e-01,
+         5.3544e-01,  0.0000e+00,  3.5026e-01,  5.3328e-01,  0.0000e+00,
+        -6.9798e-01, -1.0687e+00,  0.0000e+00,  3.5000e+01,  3.5000e+01,
+         3.5000e+01])
 start = time.time()
 
 sol = torchIntegrate(full_vec, .001, 10).numpy()
@@ -100,7 +105,7 @@ plot_time = second-first
 
 writer = animation.FFMpegWriter(fps=100)
 ani = animation.FuncAnimation(fig, update, frames=1_000, interval=25, blit=True)
-ani.save(r"D:\Aki\Pycharm\PycharmProjects\PeriodicThreeBodies\Videos\April15\a4.mp4", writer=writer)
+ani.save(r"D:\Aki\Pycharm\PycharmProjects\PeriodicThreeBodies\Videos\April19\a8.mp4", writer=writer)
 second = time.time()
 print(f"Calculation: {calc}")
 print(f"Plotting: {plot_time}")

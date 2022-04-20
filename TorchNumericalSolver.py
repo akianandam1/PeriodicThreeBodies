@@ -1,6 +1,6 @@
 import torch
 from constants import *
-import time
+
 
 # Differential Equations Governing Three Bodies
 # w is flattened input torch tensor with position vector followed by velocity vector
@@ -45,9 +45,9 @@ def torchIntegrate(input_vector, dt, time_span):
     v_1 = input_vector[9:12]
     v_2 = input_vector[12:15]
     v_3 = input_vector[15:18]
-    m_1 = input_vector[18].item()
-    m_2 = input_vector[19].item()
-    m_3 = input_vector[20].item()
+    m_1 = input_vector[18]
+    m_2 = input_vector[19]
+    m_3 = input_vector[20]
 
     w = torch.stack(
         [r_1.flatten(), r_2.flatten(), r_3.flatten(), v_1.flatten(), v_2.flatten(), v_3.flatten()]).flatten()
@@ -90,9 +90,9 @@ def get_full_state(input_vector, dt, time_span):
     v_1 = input_vector[9:12]
     v_2 = input_vector[12:15]
     v_3 = input_vector[15:18]
-    m_1 = input_vector[18].item()
-    m_2 = input_vector[19].item()
-    m_3 = input_vector[20].item()
+    m_1 = input_vector[18]
+    m_2 = input_vector[19]
+    m_3 = input_vector[20]
 
     w = torch.stack(
         [r_1.flatten(), r_2.flatten(), r_3.flatten(), v_1.flatten(), v_2.flatten(), v_3.flatten()]).flatten()
@@ -134,7 +134,6 @@ def get_full_state(input_vector, dt, time_span):
 
 
 
-
 # Function for getting the final position of objects after time elapse w/ dt time interval
 def get_final_data(input_vector, dt=.001, time_span=1):
     return torchIntegrate(input_vector, dt, time_span)[-1]
@@ -142,13 +141,23 @@ def get_final_data(input_vector, dt=.001, time_span=1):
 
 # .001 dt for 100 s
 if __name__ == "__main__":
+    # input_vec = torch.tensor(
+    #     [-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2 * 0.347111, -2 * 0.532728, 0, 35,
+    #      35, 35])
+    #
+    # print(get_full_state(input_vec, 0.001, 10))
 
-    input_vec = torch.tensor([2.3050e-01, -4.0595e-02, 8.5479e-44])
-    full_vec = torch.cat(
-        [torch.tensor([1, 0, 0, 0, 0, 0, 0, 1, 0]), input_vec, torch.tensor([0, 0, 0, 0, 0, 0, 1, 1, 1])])
+    t1 = torch.tensor([1,0,0], dtype=torch.float32)
+    t2 = torch.tensor([2,0,0], dtype=torch.float32)
+    mse = torch.nn.MSELoss()
+    print(mse(t1,t2))
 
-    sol = get_full_state(full_vec, .01, 10)
-    print(sol.shape)
+    # input_vec = torch.tensor([2.3050e-01, -4.0595e-02, 8.5479e-44])
+    # full_vec = torch.cat(
+    #     [torch.tensor([1, 0, 0, 0, 0, 0, 0, 1, 0]), input_vec, torch.tensor([0, 0, 0, 0, 0, 0, 1, 1, 1])])
+    #
+    # sol = get_full_state(full_vec, .01, 10)
+    # print(sol.shape)
     # ans = torchIntegrate(full_vec, .001, 10).numpy()
     # np.set_printoptions(threshold=sys.maxsize)
     # print(ans)

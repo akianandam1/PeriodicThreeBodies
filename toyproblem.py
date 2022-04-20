@@ -72,6 +72,8 @@ def fit(epochs, lr, input_vec):
         i += 1
 
 
-print(input_vec)
-fit(1000, 0.001, input_vec)
-print(input_vec)
+# print(input_vec)
+# fit(1000, 0.001, input_vec)
+# print(input_vec)
+t = torch.tensor([1,1])
+print(str(t))
