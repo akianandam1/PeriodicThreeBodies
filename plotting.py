@@ -12,11 +12,11 @@ mpl.rcParams['animation.ffmpeg_path'] = r'D:\Aki\Python37\Lib\site-packages\ffmp
 # full_vec = torch.cat(
 #     [torch.tensor([1, 0, 0, 0, 0, 0, 0, 1, 0]), input_vec, torch.tensor([0, 0, 0, 0, 0, 0, 1, 1, 1])])
 #full_vec = torch.tensor([-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2*0.347111, -2*0.532728, 0, 35.7071, 35.7071, 35.7071])
-full_vec = torch.tensor([-1.0011e+00,  2.5179e-04,  0.0000e+00,  1.0015e+00, -1.2975e-03,
-         0.0000e+00, -4.2053e-04,  1.0457e-03,  0.0000e+00,  3.4798e-01,
-         5.3279e-01,  0.0000e+00,  3.4695e-01,  5.3524e-01,  0.0000e+00,
-        -6.9493e-01, -1.0680e+00,  0.0000e+00,  3.5000e+01,  3.5000e+01,
-         3.5000e+01])
+full_vec = torch.tensor([-1.0165e+00,  4.7802e-03,  0.0000e+00,  1.0159e+00, -5.8923e-03,
+         0.0000e+00,  6.4987e-04,  1.1122e-03,  0.0000e+00,  3.5182e-01,
+         5.4296e-01,  0.0000e+00,  3.4964e-01,  5.4388e-01,  0.0000e+00,
+        -7.0146e-01, -1.0868e+00,  0.0000e+00,  3.5706e+01,  3.5707e+01,
+         3.5708e+01])
 start = time.time()
 
 sol = torchIntegrate(full_vec, .001, 10).numpy()
@@ -100,12 +100,15 @@ def update(i):
     return particle1, particle2, particle3, p1, p2, p3, #model_particle1, model_particle2, model_particle3, model_p1, model_p2, model_p3
 
 
-second = time.time()
-plot_time = second-first
+
+
 
 writer = animation.FFMpegWriter(fps=100)
 ani = animation.FuncAnimation(fig, update, frames=1_000, interval=25, blit=True)
-ani.save(r"D:\Aki\Pycharm\PycharmProjects\PeriodicThreeBodies\Videos\April20\a10.mp4", writer=writer)
+ani.save(r"D:\Aki\Pycharm\PycharmProjects\PeriodicThreeBodies\Videos\April23\a5.mp4", writer=writer)
+
+
 second = time.time()
+plot_time = second-first
 print(f"Calculation: {calc}")
 print(f"Plotting: {plot_time}")
