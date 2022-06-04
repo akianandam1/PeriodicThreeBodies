@@ -12,10 +12,10 @@ mpl.rcParams['animation.ffmpeg_path'] = r'D:\Aki\Python37\Lib\site-packages\ffmp
 # full_vec = torch.cat(
 #     [torch.tensor([1, 0, 0, 0, 0, 0, 0, 1, 0]), input_vec, torch.tensor([0, 0, 0, 0, 0, 0, 1, 1, 1])])
 #full_vec = torch.tensor([-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2*0.347111, -2*0.532728, 0, 35.7071, 35.7071, 35.7071])
-full_vec = torch.tensor([-1.0089e+00, -5.6179e-03,  0.0000e+00,  1.0044e+00,  1.7051e-05,
-         0.0000e+00,  4.5403e-03,  5.6008e-03,  0.0000e+00,  3.4644e-01,
-         5.2207e-01,  0.0000e+00,  3.3618e-01,  5.3151e-01,  0.0000e+00,
-        -6.9760e-01, -1.0590e+00,  0.0000e+00,  3.5708e+01,  3.5706e+01,
+full_vec = torch.tensor([-1.0089e+00, -5.6278e-03,  0.0000e+00,  1.0043e+00, -2.1155e-06,
+         0.0000e+00,  4.5193e-03,  5.6299e-03,  0.0000e+00,  3.4643e-01,
+         5.2202e-01,  0.0000e+00,  3.3615e-01,  5.3153e-01,  0.0000e+00,
+        -6.9759e-01, -1.0589e+00,  0.0000e+00,  3.5708e+01,  3.5706e+01,
          3.5706e+01])
 start = time.time()
 
@@ -105,7 +105,7 @@ def update(i):
 
 writer = animation.FFMpegWriter(fps=100)
 ani = animation.FuncAnimation(fig, update, frames=1_000, interval=25, blit=True)
-ani.save(r"D:\Aki\Pycharm\PycharmProjects\PeriodicThreeBodies\Videos\May19\a2.mp4", writer=writer)
+ani.save(r"D:\Aki\Pycharm\PycharmProjects\PeriodicThreeBodies\Videos\May22\a6.mp4", writer=writer)
 
 
 second = time.time()
