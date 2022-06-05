@@ -5,7 +5,7 @@ import matplotlib as mpl
 import torch
 
 
-mpl.rcParams['animation.ffmpeg_path'] = r'D:\Aki\Python37\Lib\site-packages\ffmpeg-5.0-essentials_build\bin\ffmpeg.exe'
+mpl.rcParams['animation.ffmpeg_path'] = r'D:\MAIN\Python37\Lib\site-packages\ffmpeg-5.0-essentials_build\bin\ffmpeg.exe'
 
 
 # Function to determine whether gpu is available or not
@@ -62,25 +62,30 @@ def nearest_position_state(particle, state, data_set, min, max):
     return index
 
 
-
-fig = plt.figure(figsize=(20, 20))
-ax = plt.axes(xlim=(-3, 3), ylim=(-3, 3))
-ax.set_title("Visualization of orbits of stars in a three body system\n", fontsize=28)
-particle1, = plt.plot([], [], color='r', label="Real First Star")
-particle2, = plt.plot([], [], color='g', label="Real Second Star")
-particle3, = plt.plot([], [], color='b', label="Real Third Star")
-ax.legend(loc="upper left", fontsize=28)
-
+figure, ax = plt.subplots(2, 1)
+top, bottom = ax
+top.set_xlim(-3,3)
+top.set_ylim(-3,3)
+# fig = plt.figure(figsize=(20, 20))
+# ax = plt.axes(xlim=(-3, 3), ylim=(-3, 3))
+# ax.set_title("Visualization of orbits of stars in a three body system\n", fontsize=28)
+particle1, = top.plot([], [], color='r', label="Real First Star")
+particle2, = top.plot([], [], color='g', label="Real Second Star")
+particle3, = top.plot([], [], color='b', label="Real Third Star")
+# ax.legend(loc="upper left", fontsize=28)
+top.legend(loc="upper left", fontsize=6)
 
 # Starting initial vector
 vec = torch.tensor([-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2*0.347111, -2*0.532728, 0, 35.7071, 35.7071, 35.7071], requires_grad = True).to(device)
 
 
 def init():
-    particle1, = plt.plot([], [], color='r', label="Real First Star")
-    particle2, = plt.plot([], [], color='g', label="Real Second Star")
-    particle3, = plt.plot([], [], color='b', label="Real Third Star")
+    particle1, = top.plot([], [], color='r', label="Real First Star")
+    particle2, = top.plot([], [], color='g', label="Real Second Star")
+    particle3, = top.plot([], [], color='b', label="Real Third Star")
     return particle1, particle2, particle3
+
+loss_values = []
 
 
 def update(i, lr, input_vec):
@@ -93,14 +98,16 @@ def update(i, lr, input_vec):
         3, data_set[0], third_particle_state)
 
     print(" ")
+    loss_values.append(loss.item())
+
     print(loss)
     input_vec.retain_grad()
     #loss.retain_grad()
     loss.backward()
     print(input_vec.grad)
     # Updates input vector
-
-    input_vec -= input_vec.grad * lr
+    with torch.no_grad():
+        input_vec -= input_vec.grad * lr
     print(input_vec)
     #print(input_vec.grad)
     # Zeroes gradient
@@ -114,21 +121,28 @@ def update(i, lr, input_vec):
     data_set = data_set.cpu().detach().numpy()
     print(f"data_set: {data_set[:,0]}")
 
-    particle1, = plt.plot(data_set[:, 0], data_set[:, 1], color='r', label="Real First Star")
-    particle2, = plt.plot(data_set[:, 3], data_set[:, 4], color='g', label="Real Second Star")
-    particle3, = plt.plot(data_set[:, 5], data_set[:, 6], color='b', label="Real Third Star")
+    particle1.set_data(data_set[:, 0], data_set[:, 1])
+    particle2.set_data(data_set[:, 3], data_set[:, 4])
+    particle3.set_data(data_set[:, 6], data_set[:, 7])
+
+
+
+    bottom.plot([x for x in range(len(loss_values))], loss_values)
 
     print(f"Epoch:{i}")
     print(" ")
     return particle1, particle2, particle3
 
 
-writer = animation.FFMpegWriter(fps=50)
-ani = animation.FuncAnimation(fig, update, frames=1000, fargs=(.00001, vec))
-ani.save(r"D:\Aki\Pycharm\PycharmProjects\PeriodicThreeBodies\Videos\May22\a5.mp4", writer=writer)
-
-a = 1000
+a = 500
 b = .00001
+
+
+writer = animation.FFMpegWriter(fps=50)
+ani = animation.FuncAnimation(figure, update, frames=a, fargs=(b, vec))
+ani.save(r"D:\Main\PycharmProjects\PeriodicThreeBodies\Videos\June5\a2.mp4", writer=writer)
+
+
 
 with open("mainoutput.txt", "a") as file:
     file.write("\n")
