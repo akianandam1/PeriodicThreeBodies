@@ -5,7 +5,7 @@ import matplotlib as mpl
 import torch
 
 
-mpl.rcParams['animation.ffmpeg_path'] = r'D:\MAIN\Python37\Lib\site-packages\ffmpeg-5.0-essentials_build\bin\ffmpeg.exe'
+mpl.rcParams['animation.ffmpeg_path'] = r'D:\Aki\Python37\Lib\site-packages\ffmpeg-5.0-essentials_build\bin\ffmpeg.exe'
 
 
 # Function to determine whether gpu is available or not
@@ -29,7 +29,7 @@ def to_device(data, device):
 
 
 def forward(input_vec):
-    return get_full_state(input_vec, 0.001, 5)
+    return get_full_state(input_vec, 0.0001, 5)
 
 
 # Compares two states and returns a numerical value rating how far apart the two states in the three
@@ -72,27 +72,45 @@ top.set_ylim(-3,3)
 particle1, = top.plot([], [], color='r', label="Real First Star")
 particle2, = top.plot([], [], color='g', label="Real Second Star")
 particle3, = top.plot([], [], color='b', label="Real Third Star")
+first_text = bottom.text(0.7, 0.85, "", fontsize = "xx-small", transform=ax[1].transAxes)
+second_text = bottom.text(0.7, 0.78, "", fontsize = "xx-small", transform = ax[1].transAxes)
+third_text = bottom.text(0.7, 0.71, "", fontsize = "xx-small", transform = ax[1].transAxes)
+
 # ax.legend(loc="upper left", fontsize=28)
 top.legend(loc="upper left", fontsize=6)
 
 # Starting initial vector
-vec = torch.tensor([-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2*0.347111, -2*0.532728, 0, 35.7071, 35.7071, 35.7071], requires_grad = True).to(device)
+#vec = torch.tensor([-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2*0.347111, -2*0.532728, 0, 35.7071, 35.7071, 35.7071], requires_grad = True).to(device)
+
+vec = torch.tensor([ 1.5204e+00,  7.6287e-01, -7.2413e-02, -1.7299e-01,  4.2930e-01,
+        -9.4932e-02, -6.4748e-01, -3.9216e-01, -3.2655e-02,  7.0786e-01,
+         5.1624e-01, -1.6740e-04,  2.0788e-01,  3.1259e-01, -2.9388e-02,
+        -8.1860e-01, -7.8648e-01,  2.8100e-02,  3.5703e+01,  3.5734e+01,
+         3.5692e+01], requires_grad=True).to(device)
+
 
 
 def init():
     particle1, = top.plot([], [], color='r', label="Real First Star")
     particle2, = top.plot([], [], color='g', label="Real Second Star")
     particle3, = top.plot([], [], color='b', label="Real Third Star")
-    return particle1, particle2, particle3
+    first_text = bottom.text(0.7, 0.85, "", fontsize = "xx-small", transform=ax[1].transAxes)
+    second_text = bottom.text(0.7, 0.78, "", fontsize = "xx-small", transform = ax[1].transAxes)
+    third_text = bottom.text(0.7, 0.71, "", fontsize = "xx-small", transform = ax[1].transAxes)
+
+    return particle1, particle2, particle3, first_text, second_text, third_text
 
 loss_values = []
 
 
 def update(i, lr, input_vec):
     data_set = forward(input_vec)
-    first_particle_state = data_set[nearest_position_state(1, data_set[0], data_set, 300, len(data_set))]
-    second_particle_state = data_set[nearest_position_state(2, data_set[0], data_set, 300, len(data_set))]
-    third_particle_state = data_set[nearest_position_state(3, data_set[0], data_set, 300, len(data_set))]
+    first_index = nearest_position_state(1, data_set[0], data_set, 300, len(data_set))
+    first_particle_state = data_set[first_index]
+    second_index = nearest_position_state(2, data_set[0], data_set, 300, len(data_set))
+    second_particle_state = data_set[second_index]
+    third_index = nearest_position_state(3, data_set[0], data_set, 300, len(data_set))
+    third_particle_state = data_set[third_index]
     loss = nearest_position(1, data_set[0], first_particle_state) + nearest_position(2, data_set[0],
                                                                                      second_particle_state) + nearest_position(
         3, data_set[0], third_particle_state)
@@ -125,22 +143,24 @@ def update(i, lr, input_vec):
     particle2.set_data(data_set[:, 3], data_set[:, 4])
     particle3.set_data(data_set[:, 6], data_set[:, 7])
 
+    first_text.set_text(f"First Particle Index: {first_index}")
+    second_text.set_text(f"Second Particle Index: {second_index}")
+    third_text.set_text(f"Third Particle Index: {third_index}")
 
-
-    bottom.plot([x for x in range(len(loss_values))], loss_values)
+    bottom.plot([x for x in range(len(loss_values))], loss_values, color="red")
 
     print(f"Epoch:{i}")
     print(" ")
-    return particle1, particle2, particle3
+    return particle1, particle2, particle3, first_text, second_text, third_text
 
 
-a = 500
-b = .00001
+a = 8
+b = .0001
 
 
-writer = animation.FFMpegWriter(fps=50)
+writer = animation.FFMpegWriter(fps=int(a/5))
 ani = animation.FuncAnimation(figure, update, frames=a, fargs=(b, vec))
-ani.save(r"D:\Main\PycharmProjects\PeriodicThreeBodies\Videos\June5\a2.mp4", writer=writer)
+ani.save(r"D:\Aki\Pycharm\PycharmProjects\PeriodicThreeBodies\Videos\OtherInitialConds\a2.mp4", writer=writer)
 
 
 
@@ -156,3 +176,16 @@ print(vec)
 #     file.truncate(0)
 #     file.write("import torch\ninput_vec = torch.tensor([-1, 0, 0, 1, 0, 0, 0, 0, 0, 0.347111, 0.532728, 0, 0.347111, 0.532728, 0, -2*0.347111, -2*0.532728, 0, 35.7071, 35.7071, 35.7071], requires_grad = True)")
 #
+
+
+# [ 1.5204e+00,  7.6287e-01, -7.2413e-02, -1.7299e-01,  4.2930e-01,
+#         -9.4932e-02, -6.4748e-01, -3.9216e-01, -3.2655e-02,  7.0786e-01,
+#          5.1624e-01, -1.6740e-04,  2.0788e-01,  3.1259e-01, -2.9388e-02,
+#         -8.1860e-01, -7.8648e-01,  2.8100e-02,  3.5703e+01,  3.5734e+01,
+#          3.5692e+01]
+
+# [ 1.5305e+00,  7.2942e-01, -7.9352e-02, -1.7411e-01,  4.6347e-01,
+#         -7.3587e-02, -6.5644e-01, -3.9288e-01, -4.7061e-02,  6.4761e-01,
+#          5.2369e-01, -6.4135e-03,  1.9012e-01,  2.8642e-01, -7.6145e-03,
+#         -7.9527e-01, -7.8276e-01,  1.3103e-02,  3.5702e+01,  3.5733e+01,
+#          3.5693e+01]
